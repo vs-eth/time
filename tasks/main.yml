@@ -1,0 +1,28 @@
+---
+- name: make sure ntp is absent
+  apt: pkg=ntp state=absent purge=yes
+
+- name: install openntpd
+  apt: name="{{ item }}" state=present update_cache=yes cache_valid_time=1800
+  with_items:
+    - openntpd
+    - rdate
+    - debconf-utils
+    - dbus
+  notify:
+    - check openntpd config file
+    - restart openntpd
+    - set time now
+
+# FIXME Report 'changed' state correctly.
+- name: configure time settings with timedatectl
+  shell: 'timedatectl set-local-rtc 0; timedatectl set-timezone {{ timezone_area }}/{{ timezone }}; timedatectl set-ntp 0'
+
+- name: install openntpd configuration
+  template: src=etc_openntpd_ntpd.conf.j2 dest=/etc/openntpd/ntpd.conf owner=root group=root mode=0644
+  notify:
+    - check openntpd config file
+    - restart openntpd
+    - set time now
+
+- meta: flush_handlers

@@ -1,0 +1,11 @@
+---
+# Timezone of the machine
+timezone_area: Europe
+timezone: Zurich
+
+# Timeservers that are used for time sync. If a domain name here resolves to multiple A/AAAA records, all of them are used.
+# For ETHZ timeservers, use:
+#  ntp_servers: [time.ethz.ch, swisstime.ethz.ch]
+ntp_servers:
+  - time.ethz.ch
+  - swisstime.ethz.ch
