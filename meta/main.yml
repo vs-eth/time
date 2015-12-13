@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: SOSETH
-  description: See tasks/main.yml
+  description: See README.md
   company: sos.ethz.ch
   license: All rights reserved.
   min_ansible_version: 1.9.1
