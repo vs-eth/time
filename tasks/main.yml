@@ -18,6 +18,18 @@
 - name: configure time settings with timedatectl
   shell: 'timedatectl set-local-rtc 0; timedatectl set-timezone {{ timezone_area }}/{{ timezone }}; timedatectl set-ntp 0'
 
+- name: check for localtime symlink
+  stat: path=/etc/localtime
+  register: localtime
+
+- name: remove /etc/localtime if it isn't a symlink
+  file: path=/etc/localtime state=absent
+  when: localtime.stat.islnk is defined and localtime.stat.islnk == False
+
+- name: set /etc/localtime symlink
+  file: path=/etc/localtime src=/usr/share/zoneinfo/{{ timezone_area }}/{{ timezone }} state=link
+  when: (localtime.stat.islnk is defined and localtime.stat.islnk == False) or localtime.stat.exists == False
+
 - name: install openntpd configuration
   template: src=etc_openntpd_ntpd.conf.j2 dest=/etc/openntpd/ntpd.conf owner=root group=root mode=0644
   notify:
