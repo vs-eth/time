@@ -9,4 +9,4 @@
   service: name=openntpd state=restarted
 
 - name: set time now
-  command: rdate -n {{ ntp_servers[0] }}
+  command: rdate -v {{ ntp_servers[0] }}
