@@ -1,23 +1,15 @@
 ---
 - name: make sure ntp is absent
-  apt: pkg=ntp state=absent purge=yes
+  apt: pkg="{{item}}" state=absent purge=yes
+  with_items:
+    - ntp
+    - openntpd
 
-- name: install openntpd
+- name: install tools
   apt: name="{{item}}" state=present update_cache=yes cache_valid_time=1800
   with_items:
-    - openntpd
-    - rdate
     - debconf-utils
     - dbus
-  notify:
-    - check openntpd config file
-    - restart openntpd
-    - set time now
-
-# FIXME Report 'changed' state correctly.
-- name: configure time settings with timedatectl
-  shell: 'timedatectl set-local-rtc 0; timedatectl set-timezone {{ timezone_area }}/{{ timezone }}; timedatectl set-ntp 0'
-  changed_when: false
 
 - name: check for localtime symlink
   stat: path=/etc/localtime
@@ -31,11 +23,15 @@
   file: path=/etc/localtime src=/usr/share/zoneinfo/{{ timezone_area }}/{{ timezone }} state=link
   when: (localtime.stat.islnk is defined and localtime.stat.islnk == False) or localtime.stat.exists == False
 
-- name: install openntpd configuration
-  template: src=etc_openntpd_ntpd.conf.j2 dest=/etc/openntpd/ntpd.conf owner=root group=root mode=0644
+- name: install timesyncd configuration
+  template: src=etc_systemd_timesyncd.conf.j2 dest=/etc/systemd/timesyncd.conf owner=root group=root mode=0644
   notify:
-    - check openntpd config file
-    - restart openntpd
-    - set time now
+    - restart timesyncd
+
+# FIXME Report 'changed' state correctly.
+- name: configure time settings with timedatectl
+  shell: 'timedatectl set-local-rtc 0; timedatectl set-timezone {{ timezone_area }}/{{ timezone }}; timedatectl set-ntp 1'
+  changed_when: false
 
 - meta: flush_handlers
+
