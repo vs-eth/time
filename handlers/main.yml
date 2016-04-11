@@ -1,12 +1,4 @@
 ---
-- name: check openntpd config file
-  command: ntpd -n
-  register: ntpd_config_check
-  changed_when: False
-  failed_when: ntpd_config_check.stderr != "configuration OK"
+- name: restart timesyncd
+  service: name=systemd-timesyncd.service state=restarted
 
-- name: restart openntpd
-  service: name=openntpd state=restarted
-
-- name: set time now
-  command: rdate -v {{ ntp_servers[0] }}
