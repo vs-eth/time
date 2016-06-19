@@ -1,30 +1,48 @@
 ---
 - name: make sure ntp is absent
-  apt: pkg="{{item}}" state=absent purge=yes
+  apt:
+    pkg: "{{item}}"
+    state: absent
+    purge: yes
   with_items:
     - ntp
     - openntpd
 
 - name: install tools
-  apt: name="{{item}}" state=present update_cache=yes cache_valid_time=1800
+  apt:
+    name: "{{item}}"
+    state: present
+    update_cache: yes
+    cache_valid_time: 1800
   with_items:
     - debconf-utils
     - dbus
 
 - name: check for localtime symlink
-  stat: path=/etc/localtime
+  stat:
+    path: /etc/localtime
   register: localtime
 
 - name: remove /etc/localtime if it isn't a symlink
-  file: path=/etc/localtime state=absent
+  file: 
+    path: /etc/localtime
+    state: absent
   when: localtime.stat.islnk is defined and localtime.stat.islnk == False
 
 - name: set /etc/localtime symlink
-  file: path=/etc/localtime src=/usr/share/zoneinfo/{{ timezone_area }}/{{ timezone }} state=link
+  file: 
+    path: /etc/localtime
+    src: /usr/share/zoneinfo/{{ timezone_area }}/{{ timezone }} 
+    state: link
   when: (localtime.stat.islnk is defined and localtime.stat.islnk == False) or localtime.stat.exists == False
 
 - name: install timesyncd configuration
-  template: src=etc_systemd_timesyncd.conf.j2 dest=/etc/systemd/timesyncd.conf owner=root group=root mode=0644
+  template: 
+    src: etc_systemd_timesyncd.conf.j2
+    dest: /etc/systemd/timesyncd.conf
+    owner: root
+    group: root
+    mode: 0644
   notify:
     - restart timesyncd
 
