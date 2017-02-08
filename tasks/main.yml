@@ -1,21 +1,17 @@
 ---
 - name: make sure ntp is absent
-  apt:
+  package:
     pkg: "{{item}}"
     state: absent
-    purge: yes
   with_items:
     - ntp
     - openntpd
 
 - name: install tools
-  apt:
+  package:
     name: "{{item}}"
     state: present
-    update_cache: yes
-    cache_valid_time: 1800
   with_items:
-    - debconf-utils
     - dbus
 
 - name: check for localtime symlink
@@ -35,21 +31,46 @@
     src: /usr/share/zoneinfo/{{ timezone_area }}/{{ timezone }} 
     state: link
   when: (localtime.stat.islnk is defined and localtime.stat.islnk == False) or localtime.stat.exists == False
+- block:
+  - name: install timesyncd configuration
+    template:
+      src: etc_systemd_timesyncd.conf.j2
+      dest: /etc/systemd/timesyncd.conf
+      owner: root
+      group: root
+      mode: 0644
+    notify:
+      - restart timesyncd
 
-- name: install timesyncd configuration
-  template: 
-    src: etc_systemd_timesyncd.conf.j2
-    dest: /etc/systemd/timesyncd.conf
-    owner: root
-    group: root
-    mode: 0644
-  notify:
-    - restart timesyncd
+  - name: enable timesyncd
+    service:
+      name: systemd-timesyncd.service
+      enabled: True
+      state: started
+  when: ansible_distribution == "Debian"
 
-# FIXME Report 'changed' state correctly.
+- block:
+  - name: install chronyd configuration
+    template:
+      src: etc_chrony.conf.j2
+      dest: /etc/chrony.conf
+      owner: root
+      group: root
+      mode: 0644
+    notify:
+      - restart chronyd
+
+  - name: enable chronyd
+    service:
+      name: chronyd.service
+      enabled: True
+      state: started
+  when: ansible_distribution == "Fedora"
+
 - name: configure time settings with timedatectl
-  shell: 'timedatectl set-local-rtc 0; timedatectl set-timezone {{ timezone_area }}/{{ timezone }}; timedatectl set-ntp 1'
-  changed_when: false
+  timezone:
+      name: "{{ timezone_area }}/{{ timezone }}"
+      hwclock: UTC
 
 - meta: flush_handlers
 

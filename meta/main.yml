@@ -4,7 +4,7 @@ galaxy_info:
   description: See README.md
   company: sos.ethz.ch
   license: All rights reserved.
-  min_ansible_version: 1.9.1
+  min_ansible_version: 2.2
   platforms:
     - name: Debian
       versions:
@@ -24,5 +24,4 @@ galaxy_info:
     #- packaging
     - system
     #- web
-dependencies:
-  - apt
+dependencies: []
