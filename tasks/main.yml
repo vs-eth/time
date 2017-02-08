@@ -3,7 +3,6 @@
   package:
     pkg: "{{item}}"
     state: absent
-    purge: yes
   with_items:
     - ntp
     - openntpd
@@ -45,8 +44,8 @@
 
 - name: configure time settings with timedatectl
   timezone:
-      name: '"{{ timezone_area }}"/"{{ timezone }}"'
-      hwclock: False
+      name: "{{ timezone_area}}/{{timezone }}"
+      hwclock: UTC
 
 - meta: flush_handlers
 
