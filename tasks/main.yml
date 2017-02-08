@@ -1,6 +1,6 @@
 ---
 - name: make sure ntp is absent
-  apt:
+  package:
     pkg: "{{item}}"
     state: absent
     purge: yes
@@ -9,7 +9,7 @@
     - openntpd
 
 - name: install tools
-  apt:
+  package:
     name: "{{item}}"
     state: present
     update_cache: yes
@@ -46,10 +46,10 @@
   notify:
     - restart timesyncd
 
-# FIXME Report 'changed' state correctly.
 - name: configure time settings with timedatectl
-  shell: 'timedatectl set-local-rtc 0; timedatectl set-timezone {{ timezone_area }}/{{ timezone }}; timedatectl set-ntp 1'
-  changed_when: false
+  timezone:
+      name: '"{{ timezone_area }}"/"{{ timezone }}"'
+      hwclock: False
 
 - meta: flush_handlers
 
