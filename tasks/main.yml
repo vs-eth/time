@@ -12,10 +12,7 @@
   package:
     name: "{{item}}"
     state: present
-    update_cache: yes
-    cache_valid_time: 1800
   with_items:
-    - debconf-utils
     - dbus
 
 - name: check for localtime symlink
