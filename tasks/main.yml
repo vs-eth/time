@@ -41,10 +41,22 @@
     mode: 0644
   notify:
     - restart timesyncd
+  when: ansible_distribution == "Debian"
+
+- name: install chronyd configuration
+  template:
+    src: etc_chrony.conf.j2
+    dest: /etc/chrony.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart chronyd
+  when: ansible_distribution == "Fedora"
 
 - name: configure time settings with timedatectl
   timezone:
-      name: "{{ timezone_area}}/{{timezone }}"
+      name: "{{ timezone_area }}/{{ timezone }}"
       hwclock: UTC
 
 - meta: flush_handlers
