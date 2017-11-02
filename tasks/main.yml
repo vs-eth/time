@@ -11,12 +11,14 @@
   when: "'freeipa_server' in group_names"
 
 - name: make sure unwanted packages are absent
+  become: True
   package:
     pkg: "{{item}}"
     state: absent
   with_items: "{{ time_pkg_absent }}"
 
 - name: install tools
+  become: True
   package:
     name: "{{item}}"
     state: present
@@ -29,12 +31,14 @@
   register: localtime
 
 - name: remove /etc/localtime if it isn't a symlink
+  become: True
   file: 
     path: /etc/localtime
     state: absent
   when: localtime.stat.islnk is defined and localtime.stat.islnk == False
 
 - name: set /etc/localtime symlink
+  become: True
   file: 
     path: /etc/localtime
     src: /usr/share/zoneinfo/{{ timezone_area }}/{{ timezone }} 
@@ -43,6 +47,7 @@
 
 - block:
   - name: install timesyncd configuration
+    become: True
     template:
       src: etc_systemd_timesyncd.conf.j2
       dest: /etc/systemd/timesyncd.conf
@@ -53,6 +58,7 @@
       - restart timesyncd
 
   - name: enable timesyncd
+    become: True
     service:
       name: systemd-timesyncd.service
       enabled: True
@@ -61,6 +67,7 @@
 
 - block:
   - name: install chronyd configuration
+    become: True
     template:
       src: etc_chrony.conf.j2
       dest: /etc/chrony.conf
@@ -71,6 +78,7 @@
       - restart chronyd
 
   - name: enable chronyd
+    become: True
     service:
       name: chronyd.service
       enabled: True
@@ -79,11 +87,13 @@
 
 - block:
   - name: install ntp
+    become: True
     dnf:
       name: ntp
       state: present
 
   - name: create ntpd configuration
+    become: True
     template:
       src: etc_ntp.conf.j2
       dest: /etc/ntp.conf
@@ -94,6 +104,7 @@
      - restart ntpd
 
   - name: enable ntpd
+    become: True
     service:
       name: ntpd.service
       enabled: True
@@ -101,6 +112,7 @@
   when: ansible_distribution == "Fedora" and "freeipa_server" in group_names
 
 - name: configure time settings with timedatectl
+  become: True
   timezone:
       name: "{{ timezone_area }}/{{ timezone }}"
       hwclock: UTC
