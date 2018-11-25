@@ -32,16 +32,16 @@
 
 - name: remove /etc/localtime if it isn't a symlink
   become: True
-  file: 
+  file:
     path: /etc/localtime
     state: absent
   when: localtime.stat.islnk is defined and localtime.stat.islnk == False
 
 - name: set /etc/localtime symlink
   become: True
-  file: 
+  file:
     path: /etc/localtime
-    src: /usr/share/zoneinfo/{{ timezone_area }}/{{ timezone }} 
+    src: /usr/share/zoneinfo/{{ timezone_area }}/{{ timezone }}
     state: link
   when: (localtime.stat.islnk is defined and localtime.stat.islnk == False) or localtime.stat.exists == False
 

@@ -3,8 +3,8 @@ galaxy_info:
   author: SOSETH
   description: See README.md
   company: sos.ethz.ch
-  license: All rights reserved.
-  min_ansible_version: 2.2
+  license: GPLv3
+  min_ansible_version: 2.5
   platforms:
     - name: Debian
       versions:
@@ -14,18 +14,5 @@ galaxy_info:
       versions:
         - 25
   categories:
-    #- cloud
-    #- cloud:ec2
-    #- cloud:gce
-    #- cloud:rax
-    #- clustering
-    #- database
-    #- database:nosql
-    #- database:sql
-    #- development
-    #- monitoring
-    #- networking
-    #- packaging
     - system
-    #- web
 dependencies: []
