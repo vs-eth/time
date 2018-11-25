@@ -1,21 +1,11 @@
 ---
-- set_fact:
-    time_pkg_absent:
-      - ntp
-      - openntpd
-  when: "'freeipa_server' not in group_names"
-
-- set_fact:
-    time_pkg_absent:
-      - chrony
-  when: "'freeipa_server' in group_names"
-
 - name: make sure unwanted packages are absent
   become: True
   package:
-    pkg: "{{item}}"
+    pkg:
+      - ntp
+      - openntpd
     state: absent
-  with_items: "{{ time_pkg_absent }}"
 
 - name: install tools
   become: True
@@ -83,33 +73,7 @@
       name: chronyd.service
       enabled: True
       state: started
-  when: ansible_distribution == "Fedora" and "freeipa_server" not in group_names
-
-- block:
-  - name: install ntp
-    become: True
-    dnf:
-      name: ntp
-      state: present
-
-  - name: create ntpd configuration
-    become: True
-    template:
-      src: etc_ntp.conf.j2
-      dest: /etc/ntp.conf
-      owner: root
-      group: root
-      mode: 0644
-    notify:
-     - restart ntpd
-
-  - name: enable ntpd
-    become: True
-    service:
-      name: ntpd.service
-      enabled: True
-      state: started
-  when: ansible_distribution == "Fedora" and "freeipa_server" in group_names
+  when: ansible_distribution == "Fedora"
 
 - name: configure time settings with timedatectl
   become: True
