@@ -7,12 +7,15 @@ server {{ s }} iburst
 # Record the rate at which the system clock gains/losses time.
 driftfile /var/lib/chrony/drift
 
-# In first three updates step the system clock instead of slew
-# if the adjustment is larger than 1 second.
+# Allow the system clock to be stepped in the first three updates
+# if its offset is larger than 1 second.
 makestep 1.0 3
 
 # Enable kernel synchronization of the real-time clock (RTC).
 rtcsync
+
+# Get TAI-UTC offset and leap seconds from the system tz database.
+leapsectz right/UTC
 
 # Specify directory for log files.
 logdir /var/log/chrony
