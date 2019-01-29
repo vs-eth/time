@@ -2,7 +2,7 @@
 - name: make sure unwanted packages are absent
   become: True
   package:
-    pkg:
+    name:
       - ntp
       - openntpd
     state: absent
@@ -10,10 +10,8 @@
 - name: install tools
   become: True
   package:
-    name: "{{item}}"
+    name: dbus
     state: present
-  with_items:
-    - dbus
 
 - name: check for localtime symlink
   stat:
