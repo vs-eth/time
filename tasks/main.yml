@@ -34,6 +34,13 @@
   when: (localtime.stat.islnk is defined and localtime.stat.islnk == False) or localtime.stat.exists == False
 
 - block:
+  - name: install timesyncd
+    become: True
+    package:
+      name: systemd-timesyncd
+      state: present
+    when: ansible_distribution_release == 'bullseye'
+
   - name: install timesyncd configuration
     become: True
     template:
