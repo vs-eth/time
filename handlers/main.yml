@@ -1,12 +1,12 @@
 ---
-- name: restart timesyncd
-  become: True
-  service:
+- name: Restart timesyncd
+  become: true
+  ansible.builtin.service:
     name: systemd-timesyncd.service
     state: restarted
 
-- name: restart chronyd
-  become: True
-  service:
+- name: Restart chronyd
+  become: true
+  ansible.builtin.service:
     name: chronyd.service
     state: restarted

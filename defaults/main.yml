@@ -2,7 +2,7 @@
 # Possible values to override the default:
 #  - timesyncd
 #  - chrony
-#time_client_override:
+# time_client_override:
 
 # Timezone of the machine
 timezone_area: Europe

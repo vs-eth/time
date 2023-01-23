@@ -1,52 +1,54 @@
 ---
 - name: Load OS specific variables
-  include_vars: "{{ ansible_distribution }}.yml"
+  ansible.builtin.include_vars: "{{ ansible_distribution }}.yml"
 
 - name: Override default time client variable
-  set_fact:
+  ansible.builtin.set_fact:
     time_client: "{{ time_client_override }}"
   when: time_client_override is defined
 
-- name: make sure unwanted packages are absent
-  become: True
-  package:
+- name: Make sure unwanted packages are absent
+  become: true
+  ansible.builtin.package:
     name:
       - ntp
       - openntpd
     state: absent
 
-- name: install tools
-  become: True
-  package:
+- name: Install tools
+  become: true
+  ansible.builtin.package:
     name: dbus
     state: present
 
-- name: check for localtime symlink
-  stat:
+- name: Check for localtime symlink
+  ansible.builtin.stat:
     path: /etc/localtime
   register: localtime
 
-- name: remove /etc/localtime if it isn't a symlink
-  become: True
-  file:
+- name: Remove /etc/localtime if it isn't a symlink
+  become: true
+  ansible.builtin.file:
     path: /etc/localtime
     state: absent
-  when: localtime.stat.islnk is defined and localtime.stat.islnk == False
+  when: localtime.stat.islnk is defined and not localtime.stat.islnk
 
-- name: set /etc/localtime symlink
-  become: True
-  file:
+- name: Set /etc/localtime symlink
+  become: true
+  ansible.builtin.file:
     path: /etc/localtime
     src: /usr/share/zoneinfo/{{ timezone_area }}/{{ timezone }}
     state: link
-  when: (localtime.stat.islnk is defined and localtime.stat.islnk == False) or localtime.stat.exists == False
+  when: (localtime.stat.islnk is defined and not localtime.stat.islnk) or not localtime.stat.exists
 
-- include_tasks: "{{ time_client }}.yml"
+- name: Run time client specific tasks
+  ansible.builtin.include_tasks: "{{ time_client }}.yml"
 
-- name: configure time settings with timedatectl
-  become: True
-  timezone:
-      name: "{{ timezone_area }}/{{ timezone }}"
-      hwclock: UTC
+- name: Configure time settings with timedatectl
+  become: true
+  community.general.timezone:
+    name: "{{ timezone_area }}/{{ timezone }}"
+    hwclock: UTC
 
-- meta: flush_handlers
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
