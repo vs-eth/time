@@ -1,0 +1,18 @@
+---
+- name: install chronyd configuration
+  become: True
+  template:
+    src: etc_chrony.conf.j2
+    dest: /etc/chrony.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart chronyd
+
+- name: enable chronyd
+  become: True
+  service:
+    name: chronyd.service
+    enabled: True
+    state: started

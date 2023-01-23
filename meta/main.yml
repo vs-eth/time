@@ -8,11 +8,10 @@ galaxy_info:
   platforms:
     - name: Debian
       versions:
-        - jessie
-        - stretch
+        - bullseye
     - name: Fedora
       versions:
-        - 25
+        - 37
   categories:
     - system
 dependencies: []
