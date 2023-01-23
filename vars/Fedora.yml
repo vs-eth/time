@@ -1,2 +1,5 @@
 ---
 time_client: chrony
+
+time_chrony_driftfile: /var/lib/chrony/drift
+time_chrony_keyfile: /etc/chrony.keys
