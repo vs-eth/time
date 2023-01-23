@@ -1,4 +1,15 @@
 ---
+- name: Ensure timesyncd is absent
+  become: true
+  ansible.builtin.package:
+    name: systemd-timesyncd
+    state: absent
+
+- name: Ensure chrony is present
+  ansible.builtin.package:
+    name: chrony
+    state: present
+
 - name: Install chronyd configuration
   become: true
   ansible.builtin.template:

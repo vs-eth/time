@@ -1,10 +1,14 @@
 ---
-- name: Install timesyncd
+- name: Ensure chrony is absent
   become: true
+  ansible.builtin.package:
+    name: chrony
+    state: absent
+
+- name: Ensure timesyncd is present
   ansible.builtin.package:
     name: systemd-timesyncd
     state: present
-  when: ansible_distribution_release == 'bullseye'
 
 - name: Install timesyncd configuration
   become: true
