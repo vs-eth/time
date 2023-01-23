@@ -3,7 +3,7 @@
   become: true
   ansible.builtin.template:
     src: etc_chrony.conf.j2
-    dest: /etc/chrony.conf
+    dest: "{{ time_chrony_conf_path }}"
     owner: root
     group: root
     mode: 0644
