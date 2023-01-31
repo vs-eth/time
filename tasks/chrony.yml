@@ -1,0 +1,29 @@
+---
+- name: Ensure timesyncd is absent
+  become: true
+  ansible.builtin.package:
+    name: systemd-timesyncd
+    state: absent
+
+- name: Ensure chrony is present
+  ansible.builtin.package:
+    name: chrony
+    state: present
+
+- name: Install chronyd configuration
+  become: true
+  ansible.builtin.template:
+    src: etc_chrony.conf.j2
+    dest: "{{ time_chrony_conf_path }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - Restart chronyd
+
+- name: Enable chronyd
+  become: true
+  ansible.builtin.service:
+    name: chronyd.service
+    enabled: true
+    state: started
