@@ -1,0 +1,7 @@
+---
+time_client: timesyncd
+
+time_chrony_conf_path: /etc/chrony/chrony.conf
+
+time_chrony_driftfile: /var/lib/chrony/chrony.drift
+time_chrony_keyfile: /etc/chrony/chrony.keys
