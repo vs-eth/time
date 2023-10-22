@@ -2,14 +2,13 @@
 galaxy_info:
   role_name: time
   author: SOSETH
+  namespace: soseth
   description: See README.md
   company: sos.ethz.ch
   license: GPLv3
   min_ansible_version: "2.5"
   platforms:
     - name: Debian
-      versions:
-        - bullseye
     - name: Fedora
       versions:
         - all
