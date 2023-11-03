@@ -7,13 +7,29 @@
     time_client: "{{ time_client_override }}"
   when: time_client_override is defined
 
+- name: Prepare facts
+  ansible.builtin.set_fact:
+    unwanted_packages:
+      - ntp
+      - openntpd
+    supported_ntp_client_packages:
+      - systemd-timesyncd
+      - chrony
+
+- name: Set unwanted packages (container)
+  ansible.builtin.set_fact:
+    unwanted_packages: "{{ unwanted_packages + supported_ntp_client_packages }}"
+  when: '"container" in ansible_virtualization_tech_guest'
+
 - name: Make sure unwanted packages are absent
   become: true
   ansible.builtin.package:
-    name:
-      - ntp
-      - openntpd
+    name: "{{ unwanted_packages }}"
     state: absent
+
+- name: Install and configure NTP client
+  ansible.builtin.include_tasks: "{{ time_client }}.yml"
+  when: '"container" not in ansible_virtualization_tech_guest'
 
 - name: Install tools
   become: true
@@ -40,9 +56,6 @@
     src: /usr/share/zoneinfo/{{ timezone_area }}/{{ timezone }}
     state: link
   when: (localtime.stat.islnk is defined and not localtime.stat.islnk) or not localtime.stat.exists
-
-- name: Run time client specific tasks
-  ansible.builtin.include_tasks: "{{ time_client }}.yml"
 
 - name: Configure time settings with timedatectl
   become: true
