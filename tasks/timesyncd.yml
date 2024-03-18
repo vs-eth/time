@@ -6,6 +6,7 @@
     state: absent
 
 - name: Ensure timesyncd is present
+  become: true
   ansible.builtin.package:
     name: systemd-timesyncd
     state: present

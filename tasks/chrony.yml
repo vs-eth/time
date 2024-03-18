@@ -6,6 +6,7 @@
     state: absent
 
 - name: Ensure chrony is present
+  become: true
   ansible.builtin.package:
     name: chrony
     state: present
